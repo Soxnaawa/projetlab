@@ -1,20 +1,37 @@
-<section class="hero"> 
-    <h2>Bienvenue à AI Academy</h2> 
-    <p>Découvrez nos cours sur l'intelligence artificielle et commencez votre voyage dans le 
-    monde de l'IA.</p> 
-    <a href="/courses" class="btn">Voir nos cours</a> 
-    </section> 
-    <section class="features"> 
-    <div class="feature"> 
-    <h3>Experts du domaine</h3> 
-    <p>Apprenez avec des instructeurs experts en IA et machine learning.</p> 
-    </div> 
-    <div class="feature"> 
-    <h3>Contenu à jour</h3> 
-    <p>Notre contenu est régulièrement mis à jour pour suivre les dernières tendances.</p> 
-    </div> 
-    <div class="feature"> 
-    <h3>Projets pratiques</h3> 
-    <p>Consolidez vos connaissances avec des projets réels et des exercices pratiques.</p> 
-    </div> 
-    </section>
+<h2>Liste des utilisateurs</h2>
+<table class="table">
+  <thead>
+    <tr>
+      <th>Nom</th>
+      <th>Email</th>
+      <th>Code Postal</th>
+      <th>Modifier</th>
+      <th>Supprimer</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% users.forEach(user => { %>
+    <tr>
+      <td>
+        <a href="<%= `/users/${user._id}` %>">
+          <%= user.fullName %>
+        </a>
+      </td>
+      <td><%= user.email %></td>
+      <td><%= user.zipCode %></td>
+      <td>
+        <a href="<%= `/users/${user._id}/edit` %>">
+          Modifier
+        </a>
+      </td>
+      <td>
+        <a href="<%= `/users/${user._id}/delete?_method=DELETE` %>"
+          onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur?')">
+          Supprimer
+        </a>
+      </td>
+    </tr>
+    <% }); %>
+  </tbody>
+</table>
+<a href="/users/new" class="btn btn-primary">Créer un nouvel utilisateur</a>
