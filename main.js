@@ -43,11 +43,10 @@ app.use(session({
     saveUninitialized: true,
     cookie: { secure: false }
 }));
-
 // Middleware pour les notifications
 app.use((req, res, next) => {
     res.locals.notification = req.session.notification;
-    delete req.session.notification; // Supprime après affichage
+    delete req.session.notification;
     next();
 });
 
@@ -58,7 +57,7 @@ app.use(layouts);
 // Routes
 app.get("/", homeController.index);
 app.get("/about", homeController.about);
-app.get("/courses", homeController.courses);
+//app.get("/courses", homeController.courses);
 //app.get("/contact", homeController.contact);
 app.get("/contact", (req, res) => {
     res.render("contact", {
@@ -105,8 +104,12 @@ app.post("/courses/create", coursesController.create, coursesController.redirect
 app.get("/courses/:id", coursesController.show, coursesController.showView);
 app.get("/courses/:id/edit", coursesController.edit);
 app.put("/courses/:id/update", coursesController.update, coursesController.redirectView);
-app.delete("/courses/:id/delete", coursesController.delete, coursesController.redirectView);
-
+//app.delete("/courses/:id/delete", coursesController.delete, coursesController.redirectView);
+// Route pour la suppression
+app.delete("/courses/:id/delete", 
+    coursesController.delete,
+    coursesController.redirectView
+  );
 // Gestion des erreurs (doit être après les autres routes)
 app.use(errorController.pageNotFoundError);
 app.use(errorController.internalServerError);

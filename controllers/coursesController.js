@@ -6,31 +6,30 @@ const getCourseParams = body => {
       title: body.title,
       description: body.description,
       maxStudents: parseInt(body.maxStudents, 10),
-      cost: parseFloat(body.cost)
+      cost: parseFloat(body.cost),
+      level: body.level || "Débutant"
     };
   };
   
 
 module.exports = {
-    index: (req, res, next) => {
-        Course.find({})
-          .then(courses => {
-            console.log("✅ Cours récupérés depuis MongoDB :", courses); // ← AJOUTE ICI
-            res.locals.courses = courses;
-            next();
-          })
-          .catch(error => {
-            console.log(`❌ Erreur lors de la récupération des cours: ${error.message}`);
-            next(error);
-          });
-      },
-      
-      indexView: (req, res) => {
-        res.render("courses/index", {
-          courses: res.locals.courses, // ✅ essentiel
-          pageTitle: "Liste des cours"
-        });
-      },
+  index: async (req, res, next) => {
+    try {
+      const courses = await Course.find({});
+      console.log("Cours trouvés:", courses);
+      res.locals.courses = courses;
+      next();
+    } catch (error) {
+      console.error("Erreur:", error);
+      next(error);
+    }
+  },
+  indexView: (req, res) => {
+    res.render("courses/index", {
+      pageTitle: "Nos Cours",
+      courses: res.locals.courses
+    });
+  },
       
 
   new: (req, res) => {
@@ -38,25 +37,35 @@ module.exports = {
   },
 
   create: (req, res, next) => {
-    let courseParams = getCourseParams(req.body);
+    let courseParams = {
+      title: req.body.title,
+      description: req.body.description,
+      maxStudents: req.body.maxStudents,
+      cost: req.body.cost
+    };
+  
     Course.create(courseParams)
       .then(course => {
+        console.log("✅ Nouveau cours créé :", course); // <-- Ajoute ceci
         res.locals.redirect = "/courses";
         res.locals.course = course;
         next();
       })
       .catch(error => {
-        console.log(`Erreur lors de la création du cours: ${error.message}`);
-        res.locals.redirect = "/courses/new";
-        next();
+        console.log(`❌ Erreur lors de la création du cours: ${error.message}`);
+        next(error);
       });
   },
-
+  
   redirectView: (req, res, next) => {
     let redirectPath = res.locals.redirect;
-    if (redirectPath) res.redirect(redirectPath);
-    else next();
+    if (redirectPath) {
+      res.redirect(redirectPath);
+    } else {
+      next();
+    }
   },
+  
 
   show: (req, res, next) => {
     let courseId = req.params.id;
@@ -107,17 +116,24 @@ module.exports = {
         next(error);
       });
   },
-
-  delete: (req, res, next) => {
-    let courseId = req.params.id;
-    Course.findByIdAndRemove(courseId)
-      .then(() => {
+  delete: async (req, res, next) => {
+    try {
+        const courseId = req.params.id;
+        await Course.findByIdAndDelete(courseId);
+        req.session.notification = {
+            type: 'success',
+            message: 'Cours supprimé avec succès'
+        };
         res.locals.redirect = "/courses";
         next();
-      })
-      .catch(error => {
-        console.log(`Erreur lors de la suppression du cours par ID: ${error.message}`);
+    } catch (error) {
+        console.error("Erreur suppression:", error);
+        req.session.notification = {
+            type: 'error',
+            message: 'Échec de la suppression'
+        };
+        res.locals.redirect = `/courses/${req.params.id}`;
         next();
-      });
-  }
+    }
+},
 };
