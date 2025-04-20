@@ -1,0 +1,29 @@
+<div class="thanks-message">
+    <% if (notification) { %>
+        <div class="notification <%= notification.type %>">
+            <%= notification.message %>
+        </div>
+    <% } %>
+    
+    <% if (formData) { %>
+        <p>Nous avons bien reçu votre demande et nous vous contacterons bientôt à l'adresse <strong><%= formData.email %></strong>.</p>
+        
+        <div class="submission-details">
+            <h3>Récapitulatif de votre message :</h3>
+            <ul>
+                <li><strong>Nom :</strong> <%= formData.name %></li>
+                <li><strong>Email :</strong> <%= formData.email %></li>
+                <% if (formData.course) { %>
+                    <li><strong>Cours d'intérêt :</strong> <%= formData.course %></li>
+                <% } %>
+                <% if (formData.message) { %>
+                    <li><strong>Message :</strong> <%= formData.message %></li>
+                <% } %>
+            </ul>
+        </div>
+    <% } else { %>
+        <p class="no-data">Aucune donnée reçue.</p>
+    <% } %>
+    
+    <a href="/" class="btn">Retour à l'accueil</a>
+</div>
