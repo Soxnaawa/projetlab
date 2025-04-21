@@ -7,7 +7,11 @@ const errorController = require("./controllers/errorController");
 const subscribersController = require("./controllers/subscribersController");
 const usersController = require("./controllers/usersController");
 const coursesController = require("./controllers/coursesController");
+const authController = require("./controllers/authController");
 const methodOverride = require('method-override');
+const cookieParser = require("cookie-parser");
+const flash = require("connect-flash");
+const passport = require("passport");
 //ce que jai ajoute 09/04
 // Configuration de la connexion à MongoDB
 mongoose.connect(
@@ -30,6 +34,26 @@ app.use(methodOverride("_method", {
     
     }));
 app.use(express.json());
+// Configuration des cookies et des sessions
+app.use(cookieParser("secret_passcode"));
+app.use(session({
+secret: "secret_passcode",
+cookie: {
+maxAge: 4000000
+},
+resave: false,
+saveUninitialized: false
+}));
+// Configuration de flash messages
+app.use(flash());
+// Configuration de Passport
+app.use(passport.initialize());
+app.use(passport.session());
+// Configuration du User model pour Passport
+const User = require("./models/user");
+passport.use(User.createStrategy());
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 // Configuration de base
 app.set("port", process.env.PORT || 3000);
 app.set("view engine", "ejs");
@@ -49,11 +73,27 @@ app.use((req, res, next) => {
     delete req.session.notification;
     next();
 });
+// Middleware pour rendre les variables locales disponibles dans toutes les vues
+app.use((req, res, next) => {
+    res.locals.flashMessages = req.flash();
+    res.locals.loggedIn = req.isAuthenticated();
+    res.locals.currentUser = req.user;
+    
+    next();
+    });
 
-
+// Routes protégées - accessibles uniquement aux utilisateurs connectés
+app.use("/users", authController.ensureLoggedIn);
+app.use("/courses/new", authController.ensureLoggedIn);
+app.use("/courses/:id/edit", authController.ensureLoggedIn);
 // Middlewares
 app.use(layouts);
-
+// Routes d'authentification
+app.get("/login", authController.login);
+app.post("/login", authController.authenticate);
+app.get("/logout", authController.logout, usersController.redirectView);
+app.get("/signup", authController.signup);
+app.post("/signup", authController.register, usersController.redirectView);
 // Routes
 app.get("/", homeController.index);
 app.get("/about", homeController.about);
