@@ -1,4 +1,4 @@
-const Course = require("../models/course");
+const Course = require("../models/courses");
 
 // Fonction utilitaire pour extraire les paramètres du cours du corps de la requête
 const getCourseParams = body => {
