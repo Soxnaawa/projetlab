@@ -1,16 +1,22 @@
-// src/components/Footer.jsx
 import React from 'react';
-function Footer() {
-return (
-<footer style={{
-backgroundColor: '#2c3e50',
-color: 'white',
-padding: '1rem',
-textAlign: 'center',
-marginTop: '2rem'
-}}>
-<p>© {new Date().getFullYear()} AI Academy. Tous droits réservés.</p>
-</footer>
-);
-}
+import { Link } from 'react-router-dom';
+import './Footer.css';
+
+const Footer = () => {
+  return (
+    <footer className="main-footer">
+      <div className="footer-content">
+        <div className="footer-links">
+          <Link to="/about">À propos</Link>
+          <Link to="/courses">Cours</Link>
+          <Link to="/contact">Contact</Link>
+        </div>
+        <p className="copyright">
+          &copy; {new Date().getFullYear()} AI Academy. Tous droits réservés.
+        </p>
+      </div>
+    </footer>
+  );
+};
+
 export default Footer;

@@ -1,16 +1,28 @@
-// src/components/Header.jsx
 import React from 'react';
-function Header() {
-return (
-<header style={{
-backgroundColor: '#2c3e50',
-color: 'white',
-padding: '1rem',
-textAlign: 'center'
-}}>
-<h1>AI Academy</h1>
-<p>La plateforme d'apprentissage dédiée à l'intelligence artificielle</p>
-</header>
-);
-}
+import { Link, NavLink } from 'react-router-dom';
+import './Header.css';
+
+const Header = () => {
+  return (
+    <header className="main-header">
+      <div className="header-container">
+        <div className="logo">
+          <Link to="/">
+            <h1>AI Academy</h1>
+          </Link>
+        </div>
+        <nav>
+          <ul>
+            <li><NavLink to="/" end>Accueil</NavLink></li>
+            <li><NavLink to="/about">À propos</NavLink></li>
+            <li><NavLink to="/courses">Cours</NavLink></li>
+            <li><NavLink to="/contact">Contact</NavLink></li>
+            <li><NavLink to="/member">Espace Membre</NavLink></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+  );
+};
+
 export default Header;
